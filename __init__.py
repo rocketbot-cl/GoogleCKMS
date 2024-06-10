@@ -240,9 +240,8 @@ try:
         location_name = GetParams("location_name")
         key_ring_name = GetParams("key_ring_name")
         key_name = GetParams("key_name")
-        duration = GetParams("duration")
 
-        response = google_ckms.create_symmetric_key(project_name, location_name, key_ring_name, key_name, duration)
+        response = google_ckms.create_symmetric_key(project_name, location_name, key_ring_name, key_name)
         SetVar(result, response)
 
     elif module == "encrypt":
