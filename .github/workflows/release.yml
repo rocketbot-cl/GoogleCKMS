@@ -52,7 +52,11 @@ jobs:
 
       - name: Search in Modules
         id: search_in_modules
-        run: echo "MODULE_ID=$(echo ${{ steps.save_response.outputs.MODULES }} | jq -r '.[] | select(.name == ${{ steps.get_name.outputs.MODULE_NAME }}) | .id')" >> "$GITHUB_OUTPUT"
+        run: |
+            MODULE_NAME="${{ steps.get_name.outputs.MODULE_NAME }}"
+            MODULE_ID=$(echo '${{ steps.save_response.outputs.MODULES }}' | jq -r --arg MODULE_NAME "$MODULE_NAME" '.[] | select(.name == $MODULE_NAME) | .id')
+            echo "MODULE_ID=$MODULE_ID" >> "$GITHUB_OUTPUT"
+        shell: bash
 
       - name: Update module in Market
         uses: fjogeleit/http-request-action@v1
