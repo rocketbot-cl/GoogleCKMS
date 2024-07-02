@@ -28,17 +28,17 @@ jobs:
         id: extract_commit_message
         run: echo "MESSAGE=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})" >> "$GITHUB_OUTPUT"
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: Release_${{ steps.get_version.outputs.VERSION }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
-          body: ${{ steps.extract_commit_message.outputs.MESSAGE }}
-          draft: false
-          prerelease: false
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: Release_${{ steps.get_version.outputs.VERSION }}
+      #     release_name: Release ${{ steps.get_version.outputs.VERSION }}
+      #     body: ${{ steps.extract_commit_message.outputs.MESSAGE }}
+      #     draft: false
+      #     prerelease: false
       - name: Deploy Stage
         uses: fjogeleit/http-request-action@v1
         id: deploy_stage
@@ -46,21 +46,24 @@ jobs:
           url: 'https://market-api.rocketbot.com/modules/'
           method: 'POST'
 
-      - name: Save Response
-        id: save_response
-        run: echo "MODULES=${{ fromJson(steps.deploy_stage.outputs.response).data }}" >> "$GITHUB_OUTPUT"
+      - name: Print Response
+        run: echo "${{ fromJson(steps.deploy_stage.outputs.response).data }}"
 
-      - name: Search in Modules
-        id: search_in_modules
-        run: |
-            MODULE_NAME="${{ steps.get_name.outputs.MODULE_NAME }}"
-            MODULE_ID=$(echo '${{ steps.save_response.outputs.MODULES }}' | jq -r --arg MODULE_NAME "$MODULE_NAME" '.[] | select(.name == $MODULE_NAME) | .id')
-            echo "MODULE_ID=$MODULE_ID" >> "$GITHUB_OUTPUT"
-        shell: bash
+      # - name: Save Response
+      #   id: save_response
+      #   run: echo "MODULES=${{ fromJson(steps.deploy_stage.outputs.response).data }}" >> "$GITHUB_OUTPUT"
 
-      - name: Update module in Market
-        uses: fjogeleit/http-request-action@v1
-        id: update_module
-        with:
-          url: 'https://market-api.rocketbot.com/modules/update/${{ steps.search_in_modules.outputs.MODULE_ID }}'
-          method: 'POST'
+      # - name: Search in Modules
+      #   id: search_in_modules
+      #   run: |
+      #       MODULE_NAME="${{ steps.get_name.outputs.MODULE_NAME }}"
+      #       MODULE_ID=$(echo '${{ steps.save_response.outputs.MODULES }}' | jq -r --arg MODULE_NAME "$MODULE_NAME" '.[] | select(.name == $MODULE_NAME) | .id')
+      #       echo "MODULE_ID=$MODULE_ID" >> "$GITHUB_OUTPUT"
+      #   shell: bash
+
+      # - name: Update module in Market
+      #   uses: fjogeleit/http-request-action@v1
+      #   id: update_module
+      #   with:
+      #     url: 'https://market-api.rocketbot.com/modules/update/${{ steps.search_in_modules.outputs.MODULE_ID }}'
+      #     method: 'POST'
