@@ -39,19 +39,19 @@ jobs:
       #     body: ${{ steps.extract_commit_message.outputs.MESSAGE }}
       #     draft: false
       #     prerelease: false
-      - name: Deploy Stage
+      - name: Module Information
         uses: fjogeleit/http-request-action@v1
-        id: deploy_stage
+        id: module_info
         with:
-          url: 'https://market-api.rocketbot.com/modules/'
+          url: 'https://market-api.rocketbot.com/modules/${{ steps.get_name.outputs.MODULE_NAME }}'
           method: 'POST'
 
       - name: Print Response
-        run: echo "${{ steps.deploy_stage.outputs.response}}"
+        run: echo "${{ fromJson(steps.module_info.outputs.response).data.id }}"
 
       # - name: Save Response
       #   id: save_response
-      #   run: echo "MODULES=${{ fromJson(steps.deploy_stage.outputs.response).data }}" >> "$GITHUB_OUTPUT"
+      #   run: echo "MODULES=${{ fromJson(steps.module_info.outputs.response).data }}" >> "$GITHUB_OUTPUT"
 
       # - name: Search in Modules
       #   id: search_in_modules
