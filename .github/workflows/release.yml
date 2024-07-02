@@ -47,7 +47,7 @@ jobs:
           method: 'POST'
 
       - name: Print Response
-        run: echo "${{ fromJson(steps.deploy_stage.outputs.response).data }}"
+        run: echo "${{ steps.deploy_stage.outputs.response}}"
 
       # - name: Save Response
       #   id: save_response
