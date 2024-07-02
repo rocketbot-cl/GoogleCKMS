@@ -48,11 +48,11 @@ jobs:
 
       - name: Save Response
         id: save_response
-        run: echo "MODULES=${{ steps.deploy_stage.outputs.response.data }}" >> "$GITHUB_OUTPUT"
+        run: echo "MODULES=${{ fromJson(steps.deploy_stage.outputs.response).data }}" >> "$GITHUB_OUTPUT"
 
       - name: Search in Modules
         id: search_in_modules
-        run: echo "MODULE_ID=$(echo ${{ steps.save_response.outputs.MODULES }} | jq -r '.[] | select(.name == $ {{ steps.get_name.outputs.MODULE_NAME }}) | .id')" >> "$GITHUB_OUTPUT"
+        run: echo "MODULE_ID=$(echo ${{ steps.save_response.outputs.MODULES }} | jq -r '.[] | select(.name == ${{ steps.get_name.outputs.MODULE_NAME }}) | .id')" >> "$GITHUB_OUTPUT"
 
       - name: Update module in Market
         uses: fjogeleit/http-request-action@v1
