@@ -4,7 +4,7 @@ This module connects to the Google CKMS API. You can use it to manage your organ
 
 *Read this in other languages: [English](Manual_GoogleCKMS.md), [Português](Manual_GoogleCKMS.pr.md), [Español](Manual_GoogleCKMS.es.md)*
   
-<!-- ![banner](imgs/Banner_GoogleCKMS.png o jpg) -->
+![banner](imgs/Banner_GoogleCKMS.jpg)
 ## How to install this module
   
 To install the module in Rocketbot Studio, it can be done in two ways:

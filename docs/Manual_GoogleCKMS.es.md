@@ -4,7 +4,7 @@ Este módulo se conecta al API de Google CKMS. Puedes usarlo para gestionar las 
 
 *Read this in other languages: [English](Manual_GoogleCKMS.md), [Português](Manual_GoogleCKMS.pr.md), [Español](Manual_GoogleCKMS.es.md)*
   
-<!-- ![banner](imgs/Banner_GoogleCKMS.png o jpg) -->
+![banner](imgs/Banner_GoogleCKMS.jpg)
 ## Como instalar este módulo
   
 Para instalar el módulo en Rocketbot Studio, se puede hacer de dos formas:

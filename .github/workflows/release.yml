@@ -1,0 +1,61 @@
+name: Create Release on QA to Master Merge
+
+on:
+  pull_request:
+    branches: 
+      - main
+    types:
+      - closed
+
+jobs:
+  create_release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read version from package.json
+        id: get_version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Read module name
+        id: get_name
+        run: echo "MODULE_NAME=$(jq -r '.name' package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Extract commit message
+        id: extract_commit_message
+        run: echo "MESSAGE=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})" >> "$GITHUB_OUTPUT"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: Release_${{ steps.get_version.outputs.VERSION }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: ${{ steps.extract_commit_message.outputs.MESSAGE }}
+          draft: false
+          prerelease: false
+      - name: Deploy Stage
+        uses: fjogeleit/http-request-action@v1
+        id: deploy_stage
+        with:
+          url: 'https://market-api.rocketbot.com/modules/'
+          method: 'POST'
+
+      - name: Save Response
+        id: save_response
+        run: echo "MODULES=${{ steps.deploy_stage.outputs.response.data }}" >> "$GITHUB_OUTPUT"
+
+      - name: Search in Modules
+        id: search_in_modules
+        run: echo "MODULE_ID=$(echo ${{ steps.save_response.outputs.MODULES }} | jq -r '.[] | select(.name == $ {{ steps.get_name.outputs.MODULE_NAME }}) | .id')" >> "$GITHUB_OUTPUT"
+
+      - name: Update module in Market
+        uses: fjogeleit/http-request-action@v1
+        id: update_module
+        with:
+          url: 'https://market-api.rocketbot.com/modules/update/${{ steps.search_in_modules.outputs.MODULE_ID }}'
+          method: 'POST'
